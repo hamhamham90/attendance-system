@@ -23,7 +23,7 @@
         <!-- หน้าหลัก: เช็คชื่อ -->
         <div id="checkInPage">
             <p class="text-center text-gray-600 mb-4">เลือกวันที่และสถานะการเข้าเรียนของนักเรียน จากนั้นกดปุ่ม "บันทึกข้อมูล" เพื่อบันทึกผล</p>
-            <input type="date" id="checkDate" class="block mx-auto mb-5 border rounded px-3 py-1">
+            <input type="date" id="checkDate" class="block mx-auto mb-5 border rounded px-3 py-1" value="" />
 
             <div class="flex justify-center gap-2 mb-3">
                 <button onclick="checkAll('มาโรงเรียน')" class="bg-green-500 text-white px-3 py-1 rounded">มาโรงเรียนทั้งหมด</button>
@@ -52,7 +52,7 @@
         <div id="dailyDetailPage" class="hidden">
             <h2 class="text-xl font-bold text-center mb-4">รายละเอียดการเข้าเรียนรายวัน</h2>
             <p class="text-center text-gray-600 mb-4">เลือกวันที่เพื่อดูข้อมูลการเข้าเรียนในวันนั้น</p>
-            <input type="date" id="dailyDate" class="block mx-auto mb-4 border rounded px-3 py-1">
+            <input type="date" id="dailyDate" class="block mx-auto mb-4 border rounded px-3 py-1" value="" />
             <button onclick="filterByDate()" class="bg-blue-500 text-white px-4 py-2 rounded mt-3 block mx-auto">ดูรายละเอียด</button>
 
             <table class="min-w-full divide-y divide-gray-200 mt-5">
@@ -66,7 +66,7 @@
                     </tr>
                 </thead>
                 <tbody id="dailyDetailsList">
-                    <!-- ข้อมูลจะถูกแสดงที่นี่ -->
+                    <!-- ข้อมูลจะแสดงที่นี่ -->
                 </tbody>
             </table>
         </div>
@@ -136,7 +136,6 @@
         ];
 
         let attendanceData = [];
-
         const studentList = document.getElementById("studentList");
         const summaryData = document.getElementById("summaryData");
         const dailyDetailsList = document.getElementById("dailyDetailsList");
@@ -169,6 +168,14 @@
             const date = document.getElementById("checkDate").value; // Get selected date
             const studentEntry = { studentId, studentName, studentStatus, date };
             attendanceData.push(studentEntry);
+        }
+
+        function checkAll(status) {
+            document.querySelectorAll('tbody tr').forEach(row => setStatus(row.querySelector('button'), status));
+        }
+
+        function clearAll() {
+            document.querySelectorAll('tbody tr').forEach(row => row.className = '');
         }
 
         function saveAttendance() {
