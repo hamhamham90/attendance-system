@@ -52,8 +52,10 @@
         <div id="dailyDetailPage" class="hidden">
             <h2 class="text-xl font-bold text-center mb-4">รายละเอียดการเข้าเรียนรายวัน</h2>
             <p class="text-center text-gray-600 mb-4">เลือกวันที่เพื่อดูข้อมูลการเข้าเรียนในวันนั้น</p>
-            <input type="date" class="block mx-auto mb-4 border rounded px-3 py-1">
-            <table class="min-w-full divide-y divide-gray-200">
+            <input type="date" id="dailyDate" class="block mx-auto mb-4 border rounded px-3 py-1">
+            <button onclick="filterByDate()" class="bg-blue-500 text-white px-4 py-2 rounded mt-3 block mx-auto">ดูรายละเอียด</button>
+
+            <table class="min-w-full divide-y divide-gray-200 mt-5">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-6 py-3">รหัส</th>
@@ -63,8 +65,8 @@
                         <th class="px-6 py-3">บันทึก</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- จะถูกอัพเดทโดย JavaScript -->
+                <tbody id="dailyDetailsList">
+                    <!-- ข้อมูลจะถูกแสดงที่นี่ -->
                 </tbody>
             </table>
         </div>
@@ -137,6 +139,7 @@
 
         const studentList = document.getElementById("studentList");
         const summaryData = document.getElementById("summaryData");
+        const dailyDetailsList = document.getElementById("dailyDetailsList");
 
         students.forEach(student => {
             const row = document.createElement("tr");
@@ -159,20 +162,13 @@
             row.className = '';
             row.classList.add(status === 'มาโรงเรียน' ? 'bg-green-200' : status === 'ไม่มาโรงเรียน' ? 'bg-red-200' : 'bg-yellow-200');
 
-            // Save status to attendanceData array
+            // Save status to attendanceData array with the date
             const studentId = row.children[1].textContent;
             const studentName = row.children[2].textContent;
             const studentStatus = status;
-            const studentEntry = { studentId, studentName, studentStatus };
+            const date = document.getElementById("checkDate").value; // Get selected date
+            const studentEntry = { studentId, studentName, studentStatus, date };
             attendanceData.push(studentEntry);
-        }
-
-        function checkAll(status) {
-            document.querySelectorAll('tbody tr').forEach(row => setStatus(row.querySelector('button'), status));
-        }
-
-        function clearAll() {
-            document.querySelectorAll('tbody tr').forEach(row => row.className = '');
         }
 
         function saveAttendance() {
@@ -198,6 +194,24 @@
             });
         }
 
+        function filterByDate() {
+            const selectedDate = document.getElementById("dailyDate").value;
+            const filteredEntries = attendanceData.filter(entry => entry.date === selectedDate);
+            dailyDetailsList.innerHTML = ''; // Clear previous details
+
+            filteredEntries.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-2">${entry.studentId}</td>
+                    <td class="px-6 py-2">${entry.studentName}</td>
+                    <td class="px-6 py-2">${entry.studentStatus}</td>
+                    <td class="px-6 py-2">${entry.date}</td>
+                    <td class="px-6 py-2">-</td>
+                `;
+                dailyDetailsList.appendChild(row);
+            });
+        }
+
         function showPage(pageId) {
             const pages = ['checkInPage', 'dailyDetailPage', 'summaryPage', 'monthlySummaryPage', 'comparePage'];
             pages.forEach(id => document.getElementById(id).classList.add('hidden'));
@@ -211,7 +225,7 @@
                         labels: ['มาโรงเรียน', 'ไม่มาโรงเรียน', 'ลา'],
                         datasets: [{
                             label: 'จำนวนวัน',
-                            data: [20, 3, 2], // ตัวอย่างข้อมูล
+                            data: [20, 3, 2],
                             backgroundColor: ['#4ade80', '#f87171', '#facc15']
                         }]
                     },
