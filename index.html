@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบเช็คชื่อออนไลน์ วิทยาลัยพณิชยการบึงพระพิษณุโลก</title>
+    <title>ระบบเช็คชื่อนักเรียนออนไลน์</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-50 p-5">
     <div class="container mx-auto bg-white shadow rounded-lg p-5">
-        <h1 class="text-2xl font-bold text-center mb-5">ระบบเช็คชื่อนักเรียนออนไลน์<br>สาขาการตลาด วิทยาลัยพณิชยการบึงพระพิษณุโลก</h1>
+        <h1 class="text-2xl font-bold text-center mb-5">ระบบเช็คชื่อนักเรียนออนไลน์</h1>
         <h2 class="text-center mb-3">ครูที่ปรึกษา: ครูแฮม</h2>
 
         <div class="flex justify-center gap-2 mb-5">
@@ -228,6 +228,41 @@
         function saveAttendance() {
             alert("บันทึกข้อมูลเรียบร้อย");
             updateSummaryPage();
+            // ส่งข้อมูลไปยัง Google Sheets
+            sendDataToGoogleSheets();
+        }
+
+        function sendDataToGoogleSheets() {
+            const date = document.getElementById("checkDate").value;
+            const time = document.getElementById("checkTime").value;
+            const studentId = "67202020001"; // ตัวอย่าง ID ของนักเรียน
+            const studentName = "นางสาวจุฑารัตน์ จันทร"; // ตัวอย่างชื่อ
+            const note = document.getElementById("note").value || ""; // รับหมายเหตุจากฟอร์ม
+
+            const data = {
+                studentId: studentId,
+                studentName: studentName,
+                status: "มาโรงเรียน", // หรือ "ไม่มาโรงเรียน", "ลา"
+                note: note,
+                date: date,
+                checkInTime: time
+            };
+
+            fetch('https://script.google.com/macros/s/AKfycbxdEhJTY4SphjJ1Uk6t04JwSpsAHPOdZDoirjQNQpW13R2V1gDQyW5LQPAIT6t9M8ecXQ/exec', {  
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert('บันทึกข้อมูลเรียบร้อย');
+                updateSummaryPage();
+            })
+            .catch(error => {
+                console.error('Error:', error); // หากเกิดข้อผิดพลาด
+            });
         }
 
         function updateSummaryPage() {
@@ -303,61 +338,7 @@
             const pages = ['checkInPage', 'dailyDetailPage', 'summaryPage', 'monthlySummaryPage', 'comparePage'];
             pages.forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(pageId).classList.remove('hidden');
-
-            if (pageId === 'monthlySummaryPage') {
-                const ctx = document.getElementById('summaryChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['มาโรงเรียน', 'ไม่มาโรงเรียน', 'ลา'],
-                        datasets: [{
-                            label: 'จำนวนวัน',
-                            data: [20, 3, 2],
-                            backgroundColor: ['#4ade80', '#f87171', '#facc15']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: { y: { beginAtZero: true } }
-                    }
-                });
-            }
         }
     </script>
 </body>
 </html>
-function saveAttendance() {
-    // รับข้อมูลจากฟอร์มในเว็บไซต์
-    const date = document.getElementById("checkDate").value;
-    const time = document.getElementById("checkTime").value;
-    const studentId = document.getElementById("studentId").value; // รหัสนักเรียน
-    const studentName = document.getElementById("studentName").value; // ชื่อนักเรียน
-    const note = document.getElementById("note").value || ""; // หมายเหตุ
-
-    // ข้อมูลที่จะส่งไปยัง Google Apps Script
-    const data = {
-        studentId: studentId,
-        studentName: studentName,
-        status: "มาโรงเรียน", // หรือ "ไม่มาโรงเรียน", "ลา"
-        note: note,
-        date: date,
-        checkInTime: time
-    };
-
-    // ส่งข้อมูลไปยัง Google Apps Script โดยใช้ fetch API
-    fetch('https://script.google.com/macros/s/AKfycbxdEhJTY4SphjJ1Uk6t04JwSpsAHPOdZDoirjQNQpW13R2V1gDQyW5LQPAIT6t9M8ecXQ/exec', {  
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams(data)  // แปลงข้อมูลให้เป็น URL-encoded
-    })
-    .then(response => response.text()) // รับการตอบกลับจาก Google Apps Script
-    .then(data => {
-        alert('บันทึกข้อมูลเรียบร้อย');
-        updateSummaryPage(); // หากต้องการอัพเดทข้อมูลหรือสรุปบางอย่าง
-    })
-    .catch(error => {
-        console.error('Error:', error); // หากเกิดข้อผิดพลาด
-    });
-}
