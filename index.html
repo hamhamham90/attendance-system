@@ -22,6 +22,7 @@
 
         <!-- หน้าหลัก: เช็คชื่อ -->
         <div id="checkInPage">
+            <p class="text-center text-gray-600 mb-4">เลือกวันที่และสถานะการเข้าเรียนของนักเรียน จากนั้นกดปุ่ม "บันทึกข้อมูล" เพื่อบันทึกผล</p>
             <input type="date" id="checkDate" class="block mx-auto mb-5 border rounded px-3 py-1">
 
             <div class="flex justify-center gap-2 mb-3">
@@ -49,14 +50,58 @@
 
         <!-- หน้ารายละเอียดรายวัน -->
         <div id="dailyDetailPage" class="hidden">
-            <h2 class="text-xl font-bold text-center mb-4">รายละเอียดรายวัน</h2>
-            <p class="text-center">(เนื้อหารายละเอียดรายวันใส่ตรงนี้)</p>
+            <h2 class="text-xl font-bold text-center mb-4">รายละเอียดการเข้าเรียนรายวัน</h2>
+            <p class="text-center text-gray-600 mb-4">เลือกวันที่เพื่อดูข้อมูลการเข้าเรียนในวันนั้น</p>
+            <input type="date" class="block mx-auto mb-4 border rounded px-3 py-1">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-6 py-3">รหัส</th>
+                        <th class="px-6 py-3">ชื่อ-สกุล</th>
+                        <th class="px-6 py-3">สถานะ</th>
+                        <th class="px-6 py-3">เวลาเช็คชื่อ</th>
+                        <th class="px-6 py-3">บันทึก</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-green-100">
+                        <td class="px-6 py-2">67202020001</td>
+                        <td class="px-6 py-2">นางสาวจุฑารัตน์ จันทร</td>
+                        <td class="px-6 py-2">มาโรงเรียน</td>
+                        <td class="px-6 py-2">08:00</td>
+                        <td class="px-6 py-2">-</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <!-- หน้าสรุปการเข้าเรียน -->
         <div id="summaryPage" class="hidden">
-            <h2 class="text-xl font-bold text-center mb-4">สรุปการเข้าเรียน</h2>
-            <p class="text-center">(เนื้อหาสรุปการเข้าเรียนใส่ตรงนี้)</p>
+            <h2 class="text-xl font-bold text-center mb-4">สรุปการเข้าเรียนทั้งหมด</h2>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-6 py-3">รหัส</th>
+                        <th class="px-6 py-3">ชื่อ-สกุล</th>
+                        <th class="px-6 py-3">มาเรียน</th>
+                        <th class="px-6 py-3">ขาด</th>
+                        <th class="px-6 py-3">ลา</th>
+                        <th class="px-6 py-3">คะแนน (100)</th>
+                        <th class="px-6 py-3">เปอร์เซ็นต์</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="px-6 py-2">67202020001</td>
+                        <td class="px-6 py-2">นางสาวจุฑารัตน์ จันทร</td>
+                        <td class="px-6 py-2">20</td>
+                        <td class="px-6 py-2">1</td>
+                        <td class="px-6 py-2">2</td>
+                        <td class="px-6 py-2">95</td>
+                        <td class="px-6 py-2">95%</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <!-- หน้าสรุปรายเดือน -->
@@ -68,7 +113,24 @@
         <!-- หน้าเปรียบเทียบภาพรวม -->
         <div id="comparePage" class="hidden">
             <h2 class="text-xl font-bold text-center mb-4">เปรียบเทียบภาพรวมของแต่ละห้อง</h2>
-            <p class="text-center">(เนื้อหาเปรียบเทียบภาพรวมใส่ตรงนี้)</p>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-6 py-3">ห้อง</th>
+                        <th class="px-6 py-3">เปอร์เซ็นต์มาเรียนเฉลี่ย</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="px-6 py-2">การตลาด</td>
+                        <td class="px-6 py-2">92%</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-2">บัญชี</td>
+                        <td class="px-6 py-2">88%</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -125,7 +187,6 @@
             const pages = ['checkInPage', 'dailyDetailPage', 'summaryPage', 'monthlySummaryPage', 'comparePage'];
             pages.forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(pageId).classList.remove('hidden');
-
             if (pageId === 'monthlySummaryPage') {
                 const ctx = document.getElementById('summaryChart').getContext('2d');
                 new Chart(ctx, {
@@ -134,7 +195,7 @@
                         labels: ['มาโรงเรียน', 'ไม่มาโรงเรียน', 'ลา'],
                         datasets: [{
                             label: 'จำนวนวัน',
-                            data: [20, 3, 2], // ตัวอย่างข้อมูล สามารถแก้เป็นจริงได้
+                            data: [20, 3, 2],
                             backgroundColor: ['#4ade80', '#f87171', '#facc15']
                         }]
                     },
