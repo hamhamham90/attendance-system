@@ -74,36 +74,29 @@
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.database(app);
 
-        // รายชื่อนักเรียน
-        const students = [
-            { id: "67202020001", name: "นางสาวจุฑารัตน์ จันทร" },
-            { id: "67202020002", name: "นายธันวา ง้วนดิน" },
-            { id: "67202020003", name: "นางสาวนันทิตา จงมีสุข" },
-            { id: "67202020004", name: "นางสาวบุณยวีร์ มีแสง" },
-            { id: "67202020006", name: "นางสาวรติมา เกษมพันธ์" },
-            { id: "67202020007", name: "นางสาวรุ่งนภา เที่ยงพร" },
-            { id: "67202020039", name: "นางสาวธนภรณ์ พุ่มรส" },
-            { id: "67202020040", name: "นายสุทิวัส ก้อนจันทร์" },
-            { id: "67202020041", name: "นางสาววิชญาดา จันต๊ะกูล" }
-        ];
+        // โหลดข้อมูลนักเรียนจาก Firebase
+        window.onload = function() {
+            const studentList = document.getElementById("studentList");
 
-        // แสดงรายชื่อนักเรียน
-        const studentList = document.getElementById("studentList");
-
-        students.forEach(student => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td class="px-6 py-2">${student.id}</td>
-                <td class="px-6 py-2">${student.name}</td>
-                <td class="px-6 py-2 space-x-2">
-                    <button onclick="setStatus(this, 'มาโรงเรียน')" class="bg-green-200 px-2 py-1 rounded">มาโรงเรียน</button>
-                    <button onclick="setStatus(this, 'ไม่มาโรงเรียน')" class="bg-red-200 px-2 py-1 rounded">ไม่มาโรงเรียน</button>
-                    <button onclick="setStatus(this, 'ลา')" class="bg-yellow-200 px-2 py-1 rounded">ลา</button>
-                </td>
-                <td class="px-6 py-2"><input type="text" class="border rounded px-2 py-1"></td>
-            `;
-            studentList.appendChild(row);
-        });
+            // ดึงข้อมูลนักเรียนจาก Firebase
+            db.ref('students').once('value').then(snapshot => {
+                snapshot.forEach(childSnapshot => {
+                    const student = childSnapshot.val();
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td class="px-6 py-2">${student.id}</td>
+                        <td class="px-6 py-2">${student.name}</td>
+                        <td class="px-6 py-2 space-x-2">
+                            <button onclick="setStatus(this, 'มาโรงเรียน')" class="bg-green-200 px-2 py-1 rounded">มาโรงเรียน</button>
+                            <button onclick="setStatus(this, 'ไม่มาโรงเรียน')" class="bg-red-200 px-2 py-1 rounded">ไม่มาโรงเรียน</button>
+                            <button onclick="setStatus(this, 'ลา')" class="bg-yellow-200 px-2 py-1 rounded">ลา</button>
+                        </td>
+                        <td class="px-6 py-2"><input type="text" class="border rounded px-2 py-1"></td>
+                    `;
+                    studentList.appendChild(row);
+                });
+            });
+        };
 
         // เปลี่ยนสถานะของนักเรียน
         function setStatus(button, status) {
@@ -176,6 +169,7 @@
             });
         }
 
+        // ฟังก์ชันสำหรับเปลี่ยนหน้า
         function showPage(pageId) {
             const pages = ['checkInPage', 'dailyDetailPage', 'summaryPage', 'monthlySummaryPage', 'comparePage'];
             pages.forEach(id => document.getElementById(id).classList.add('hidden'));
