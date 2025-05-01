@@ -23,7 +23,10 @@
         <!-- หน้าหลัก: เช็คชื่อ -->
         <div id="checkInPage">
             <p class="text-center text-gray-600 mb-4">เลือกวันที่และสถานะการเข้าเรียนของนักเรียน จากนั้นกดปุ่ม "บันทึกข้อมูล" เพื่อบันทึกผล</p>
-            <input type="date" id="checkDate" class="block mx-auto mb-5 border rounded px-3 py-1">
+
+            <!-- เพิ่มการเลือกวันที่และเวลาปัจจุบัน -->
+            <input type="date" id="checkDate" class="block mx-auto mb-5 border rounded px-3 py-1" value="" />
+            <input type="time" id="checkTime" class="block mx-auto mb-5 border rounded px-3 py-1" value="" />
 
             <div class="flex justify-center gap-2 mb-3">
                 <button onclick="checkAll('มาโรงเรียน')" class="bg-green-500 text-white px-3 py-1 rounded">มาโรงเรียนทั้งหมด</button>
@@ -52,7 +55,9 @@
         <div id="dailyDetailPage" class="hidden">
             <h2 class="text-xl font-bold text-center mb-4">รายละเอียดการเข้าเรียนรายวัน</h2>
             <p class="text-center text-gray-600 mb-4">เลือกวันที่เพื่อดูข้อมูลการเข้าเรียนในวันนั้น</p>
-            <input type="date" id="dailyDate" class="block mx-auto mb-4 border rounded px-3 py-1">
+
+            <!-- เพิ่มการเลือกวันที่ -->
+            <input type="date" id="dailyDate" class="block mx-auto mb-4 border rounded px-3 py-1" value="" />
             <button onclick="filterByDate()" class="bg-blue-500 text-white px-4 py-2 rounded mt-3 block mx-auto">ดูรายละเอียด</button>
 
             <table class="min-w-full divide-y divide-gray-200 mt-5">
@@ -180,11 +185,11 @@
             row.className = '';
             row.classList.add(status === 'มาโรงเรียน' ? 'bg-green-200' : status === 'ไม่มาโรงเรียน' ? 'bg-red-200' : 'bg-yellow-200');
 
-            // Save status to attendanceData array with the date
+            // Save status to attendanceData array with the date and time
             const studentId = row.children[1].textContent;
             const studentName = row.children[2].textContent;
             const studentStatus = status;
-            const date = document.getElementById("checkDate").value; // Get selected date
+            const date = document.getElementById("checkDate").value + " " + document.getElementById("checkTime").value; // Get selected date and time
             const studentEntry = { studentId, studentName, studentStatus, date };
             attendanceData.push(studentEntry);
         }
@@ -222,7 +227,7 @@
 
         function filterByDate() {
             const selectedDate = document.getElementById("dailyDate").value;
-            const filteredEntries = attendanceData.filter(entry => entry.date === selectedDate);
+            const filteredEntries = attendanceData.filter(entry => entry.date.startsWith(selectedDate));
             dailyDetailsList.innerHTML = ''; // Clear previous details
 
             filteredEntries.forEach(entry => {
