@@ -167,6 +167,14 @@
             attendanceData.push(studentEntry);
         }
 
+        function checkAll(status) {
+            document.querySelectorAll('tbody tr').forEach(row => setStatus(row.querySelector('button'), status));
+        }
+
+        function clearAll() {
+            document.querySelectorAll('tbody tr').forEach(row => row.className = '');
+        }
+
         function saveAttendance() {
             alert("บันทึกข้อมูลเรียบร้อย");
             updateSummaryPage();
@@ -203,7 +211,7 @@
                         labels: ['มาโรงเรียน', 'ไม่มาโรงเรียน', 'ลา'],
                         datasets: [{
                             label: 'จำนวนวัน',
-                            data: [20, 3, 2],
+                            data: [20, 3, 2], // ตัวอย่างข้อมูล
                             backgroundColor: ['#4ade80', '#f87171', '#facc15']
                         }]
                     },
