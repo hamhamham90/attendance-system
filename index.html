@@ -23,7 +23,7 @@
         <!-- หน้าหลัก: เช็คชื่อ -->
         <div id="checkInPage">
             <p class="text-center text-gray-600 mb-4">เลือกวันที่และสถานะการเข้าเรียนของนักเรียน จากนั้นกดปุ่ม "บันทึกข้อมูล" เพื่อบันทึกผล</p>
-            <input type="date" id="checkDate" class="block mx-auto mb-5 border rounded px-3 py-1" value="" />
+            <input type="date" id="checkDate" class="block mx-auto mb-5 border rounded px-3 py-1">
 
             <div class="flex justify-center gap-2 mb-3">
                 <button onclick="checkAll('มาโรงเรียน')" class="bg-green-500 text-white px-3 py-1 rounded">มาโรงเรียนทั้งหมด</button>
@@ -52,7 +52,7 @@
         <div id="dailyDetailPage" class="hidden">
             <h2 class="text-xl font-bold text-center mb-4">รายละเอียดการเข้าเรียนรายวัน</h2>
             <p class="text-center text-gray-600 mb-4">เลือกวันที่เพื่อดูข้อมูลการเข้าเรียนในวันนั้น</p>
-            <input type="date" id="dailyDate" class="block mx-auto mb-4 border rounded px-3 py-1" value="" />
+            <input type="date" id="dailyDate" class="block mx-auto mb-4 border rounded px-3 py-1">
             <button onclick="filterByDate()" class="bg-blue-500 text-white px-4 py-2 rounded mt-3 block mx-auto">ดูรายละเอียด</button>
 
             <table class="min-w-full divide-y divide-gray-200 mt-5">
@@ -95,7 +95,25 @@
         <!-- หน้าสรุปรายเดือน -->
         <div id="monthlySummaryPage" class="hidden">
             <h2 class="text-xl font-bold text-center mb-4">สรุปการเข้าเรียนรายเดือน</h2>
+            <input type="month" id="monthSelector" class="block mx-auto mb-5 border rounded px-3 py-1">
+            <button onclick="filterByMonth()" class="bg-blue-500 text-white px-4 py-2 rounded mt-3 block mx-auto">ดูการเข้าเรียนรายเดือน</button>
+
             <canvas id="summaryChart" width="400" height="200"></canvas>
+            <table class="min-w-full divide-y divide-gray-200 mt-5">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-6 py-3">รหัส</th>
+                        <th class="px-6 py-3">ชื่อ-สกุล</th>
+                        <th class="px-6 py-3">มาเรียน</th>
+                        <th class="px-6 py-3">ขาด</th>
+                        <th class="px-6 py-3">ลา</th>
+                        <th class="px-6 py-3">เปอร์เซ็นต์</th>
+                    </tr>
+                </thead>
+                <tbody id="monthlySummaryData">
+                    <!-- ข้อมูลการเข้าเรียนของนักเรียนในเดือนนั้นๆ -->
+                </tbody>
+            </table>
         </div>
 
         <!-- หน้าเปรียบเทียบภาพรวม -->
@@ -139,6 +157,7 @@
         const studentList = document.getElementById("studentList");
         const summaryData = document.getElementById("summaryData");
         const dailyDetailsList = document.getElementById("dailyDetailsList");
+        const monthlySummaryData = document.getElementById("monthlySummaryData");
 
         students.forEach(student => {
             const row = document.createElement("tr");
@@ -217,6 +236,39 @@
                 `;
                 dailyDetailsList.appendChild(row);
             });
+        }
+
+        function filterByMonth() {
+            const selectedMonth = document.getElementById("monthSelector").value;
+            const filteredEntries = attendanceData.filter(entry => entry.date.startsWith(selectedMonth));
+
+            monthlySummaryData.innerHTML = ''; // Clear previous data
+
+            const groupedData = {};
+            filteredEntries.forEach(entry => {
+                if (!groupedData[entry.studentId]) {
+                    groupedData[entry.studentId] = { studentId: entry.studentId, studentName: entry.studentName, มาโรงเรียน: 0, ขาด: 0, ลา: 0 };
+                }
+                if (entry.studentStatus === 'มาโรงเรียน') groupedData[entry.studentId].มาโรงเรียน++;
+                if (entry.studentStatus === 'ไม่มาโรงเรียน') groupedData[entry.studentId].ขาด++;
+                if (entry.studentStatus === 'ลา') groupedData[entry.studentId].ลา++;
+            });
+
+            for (const studentId in groupedData) {
+                const student = groupedData[studentId];
+                const row = document.createElement('tr');
+                const percentage = (student.มาโรงเรียน / filteredEntries.length) * 100;
+
+                row.innerHTML = `
+                    <td class="px-6 py-2">${student.studentId}</td>
+                    <td class="px-6 py-2">${student.studentName}</td>
+                    <td class="px-6 py-2">${student.มาโรงเรียน}</td>
+                    <td class="px-6 py-2">${student.ขาด}</td>
+                    <td class="px-6 py-2">${student.ลา}</td>
+                    <td class="px-6 py-2">${percentage}%</td>
+                `;
+                monthlySummaryData.appendChild(row);
+            }
         }
 
         function showPage(pageId) {
