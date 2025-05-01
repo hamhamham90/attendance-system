@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบเช็คชื่อนักเรียนออนไลน์</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 </head>
 <body class="bg-gray-50 p-5">
     <div class="container mx-auto bg-white shadow rounded-lg p-5">
@@ -142,6 +143,22 @@
     </div>
 
     <script>
+        // กำหนดการตั้งค่า Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDbP11ng3cHktZvKj738qaAmN_j0qUDxI",
+            authDomain: "attend1-adb2e.firebaseapp.com",
+            databaseURL: "https://attend1-adb2e-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "attend1-adb2e",
+            storageBucket: "attend1-adb2e.firebasestorage.app",
+            messagingSenderId: "799703023848",
+            appId: "1:799703023848:web:315bbfccb65fa43d40095d",
+            measurementId: "G-NJS1SDWL81"
+        };
+
+        // เริ่มต้น Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database(app);
+
         const students = [
             { id: "67202020001", name: "นางสาวจุฑารัตน์ จันทร" },
             { id: "67202020002", name: "นายธันวา ง้วนดิน" },
@@ -224,11 +241,11 @@
         function saveAttendance() {
             alert("บันทึกข้อมูลเรียบร้อย");
             updateSummaryPage();
-            // ส่งข้อมูลไปยัง Google Sheets
-            sendDataToGoogleSheets();
+            // ส่งข้อมูลไปยัง Firebase
+            sendDataToFirebase();
         }
 
-        function sendDataToGoogleSheets() {
+        function sendDataToFirebase() {
             const date = document.getElementById("checkDate").value;
             const time = document.getElementById("checkTime").value;
             const studentId = "67202020001"; // ตัวอย่าง ID ของนักเรียน
@@ -244,21 +261,16 @@
                 checkInTime: time
             };
 
-            fetch('https://script.google.com/macros/s/AKfycbwvUKWpQmHqv9wn6XKD4OEK9qaXqEJhC_VZTh-NSZZz/dev', {  
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert('บันทึกข้อมูลเรียบร้อย');
-                updateSummaryPage();
-            })
-            .catch(error => {
-                console.error('Error:', error); // หากเกิดข้อผิดพลาด
-            });
+            // ส่งข้อมูลไปยัง Firebase Realtime Database
+            const newRef = db.ref('attendance').push();
+            newRef.set(data)
+                .then(() => {
+                    alert("บันทึกข้อมูลเรียบร้อย");
+                    updateSummaryPage(); // อัพเดทข้อมูลหรือสรุปบางอย่าง
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
         }
 
         function updateSummaryPage() {
