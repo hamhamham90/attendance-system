@@ -3,183 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบเช็คชื่อการมาเรียน</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://apis.google.com/js/api.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>ระบบเช็คชื่อออนไลน์ - วิทยาลัยพณิชยการบึงพระพิษณุโลก</title>
     <style>
-        .upload-icon {
-            font-size: 40px;
-            color: #4caf50;
-        }
-        .table-row {
-            transition: background-color 0.3s ease;
-        }
-        .table-row:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-        /* custom theme */
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-        }
-        .header {
-            font-size: 24px;
-            font-weight: 600;
-            color: white;
-        }
-        .footer {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            color: #aaa;
-        }
+        body { font-family: 'Kanit', sans-serif; }
+        .status-btn { width: 90px; }
     </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
 </head>
-<body class="flex flex-col h-screen">
-    <header class="flex justify-center items-center py-6">
-        <h1 class="header">ระบบเช็คชื่อการมาเรียน</h1>
-    </header>
-
-    <!-- Date picker and action buttons -->
-    <div class="flex justify-center space-x-4 py-6">
-        <input type="date" id="datePicker" class="p-2 rounded border-2 border-gray-300" />
-        <button onclick="checkAttendance()" class="bg-blue-500 text-white p-2 rounded">เช็คชื่อทั้งหมด</button>
-        <button onclick="resetAttendance()" class="bg-red-500 text-white p-2 rounded">ยกเลิกทั้งหมด</button>
+<body class="bg-gradient-to-br from-blue-200 to-purple-200 min-h-screen p-4">
+    <h1 class="text-2xl font-bold text-center text-purple-800 mb-4">ระบบเช็คชื่อออนไลน์</h1>
+    <h2 class="text-xl text-center text-purple-600 mb-2">สาขาการตลาด แผนกวิชาการตลาด</h2>
+    <div class="flex justify-center mb-4">
+        <input type="date" id="datePicker" class="p-2 rounded shadow">
     </div>
 
-    <!-- Table for students -->
-    <div class="overflow-x-auto px-4 py-2 flex-grow">
-        <table class="min-w-full table-auto text-white">
-            <thead class="bg-gray-700">
-                <tr>
-                    <th class="px-4 py-2 text-center">เลือก</th>
-                    <th class="px-4 py-2">รหัสนักเรียน</th>
-                    <th class="px-4 py-2">ชื่อ-นามสกุล</th>
-                    <th class="px-4 py-2">สถานะ</th>
-                    <th class="px-4 py-2">อัปโหลดรูป</th>
+    <div class="overflow-auto">
+        <table class="w-full bg-white rounded shadow-lg">
+            <thead>
+                <tr class="bg-purple-300">
+                    <th class="py-2">รหัสนักเรียน</th>
+                    <th>ชื่อ - สกุล</th>
+                    <th>สถานะ</th>
                 </tr>
             </thead>
-            <tbody id="studentTable">
-                <!-- Students will be added here dynamically -->
+            <tbody id="studentList">
+                <!-- รายชื่อนักเรียนจะโหลดด้วย JavaScript -->
             </tbody>
         </table>
     </div>
 
-    <footer class="footer">
+    <div class="flex justify-center gap-4 mt-4">
+        <button onclick="checkAll('มา')" class="bg-green-400 hover:bg-green-500 text-white py-2 px-4 rounded">มาเรียนทั้งหมด</button>
+        <button onclick="checkAll('ลา')" class="bg-yellow-400 hover:bg-yellow-500 text-white py-2 px-4 rounded">ลาทั้งหมด</button>
+        <button onclick="checkAll('ขาด')" class="bg-red-400 hover:bg-red-500 text-white py-2 px-4 rounded">ขาดทั้งหมด</button>
+        <button onclick="clearAll()" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded">ยกเลิกทั้งหมด</button>
+    </div>
+
+    <footer class="fixed bottom-2 left-2 text-sm text-gray-600">
         Developer: ครูแฮม © 2025-2026 All Rights Reserved
     </footer>
 
     <script>
         const students = [
-            { id: "67202020001", name: "นางสาวจุฑารัตน์ จันทร", status: "" },
-            { id: "67202020002", name: "นายธันวา ง้วนดิน", status: "" },
-            { id: "67202020003", name: "นางสาวนันทิตา จงมีสุข", status: "" },
-            { id: "67202020004", name: "นางสาวบุณยวีร์ มีแสง", status: "" },
-            { id: "67202020006", name: "นางสาวรติมา เกษมพันธ์", status: "" },
-            { id: "67202020007", name: "นางสาวรุ่งนภา เที่ยงพร", status: "" }
-            // Add other students as needed
+            {id:'67202020001',name:'นางสาวจุฑารัตน์ จันทร'},
+            {id:'67202020002',name:'นายธันวา ง้วนดิน'},
+            {id:'67202020003',name:'นางสาวนันทิตา จงมีสุข'},
+            {id:'67202020004',name:'นางสาวบุณยวีร์ มีแสง'},
+            {id:'67202020006',name:'นางสาวรติมา เกษมพันธ์'},
+            {id:'67202020007',name:'นางสาวรุ่งนภา เที่ยงพร'},
+            {id:'67202020039',name:'นางสาวธนภรณ์ พุ่มรส'},
+            {id:'67202020040',name:'นายสุทิวัส ก้อนจันทร์'},
+            {id:'67202020041',name:'นางสาววิชญาดา จันต๊ะกูล'}
         ];
 
-        let studentData = [...students];
-
-        // Render student table dynamically
-        function renderTable() {
-            const tableBody = document.getElementById('studentTable');
-            tableBody.innerHTML = ''; // Clear previous content
-
-            studentData.forEach((student, index) => {
-                const row = document.createElement('tr');
-                row.id = `student-${student.id}`;
-                row.classList.add('table-row');
-                row.innerHTML = `
-                    <td class="px-4 py-2 text-center"><input type="checkbox" id="checkbox-${index + 1}" onclick="updateRow(${index + 1})"></td>
-                    <td class="px-4 py-2">${student.id}</td>
-                    <td class="px-4 py-2">${student.name}</td>
-                    <td class="px-4 py-2">
-                        <select id="status-${index + 1}" onchange="updateStatus(${index + 1})">
-                            <option value="present" class="bg-green-500">มาโรงเรียน</option>
-                            <option value="absent" class="bg-red-500">ไม่มาโรงเรียน</option>
-                            <option value="leave" class="bg-yellow-500">ลา</option>
+        function renderStudents(){
+            let html = '';
+            students.forEach((stu,index)=>{
+                html += `<tr class="text-center" id="row-${index}">
+                    <td class="py-2">${stu.id}</td>
+                    <td>${stu.name}</td>
+                    <td>
+                        <select onchange="updateStatus(${index},this.value)" class="status-btn rounded border p-1">
+                            <option value="">--เลือก--</option>
+                            <option value="มา">มา</option>
+                            <option value="ลา">ลา</option>
+                            <option value="ขาด">ขาด</option>
                         </select>
                     </td>
-                    <td class="px-4 py-2">
-                        <span class="upload-icon">📸</span>
-                        <input type="file" id="upload-${index + 1}" />
-                    </td>
-                `;
-                tableBody.appendChild(row);
+                </tr>`;
+            });
+            document.getElementById('studentList').innerHTML = html;
+        }
+
+        function updateStatus(index,status){
+            const row = document.getElementById('row-'+index);
+            row.classList.remove('bg-green-200','bg-yellow-200','bg-red-200');
+            if(status=='มา') row.classList.add('bg-green-200');
+            else if(status=='ลา') row.classList.add('bg-yellow-200');
+            else if(status=='ขาด') row.classList.add('bg-red-200');
+        }
+
+        function checkAll(status){
+            students.forEach((_,index)=>{
+                const select = document.querySelector(`#row-${index} select`);
+                select.value = status;
+                updateStatus(index,status);
             });
         }
 
-        // Update student status
-        function updateStatus(studentId) {
-            const status = document.getElementById(`status-${studentId}`).value;
-            studentData[studentId - 1].status = status;
-            const row = document.getElementById(`student-${studentData[studentId - 1].id}`);
-            if (status === 'present') {
-                row.classList.add('bg-green-500');
-                row.classList.remove('bg-red-500', 'bg-yellow-500');
-            } else if (status === 'absent') {
-                row.classList.add('bg-red-500');
-                row.classList.remove('bg-green-500', 'bg-yellow-500');
-            } else if (status === 'leave') {
-                row.classList.add('bg-yellow-500');
-                row.classList.remove('bg-green-500', 'bg-red-500');
-            }
-        }
-
-        // Update row checkbox selection
-        function updateRow(studentId) {
-            const checkbox = document.getElementById(`checkbox-${studentId}`);
-            const statusSelect = document.getElementById(`status-${studentId}`);
-            if (checkbox.checked) {
-                studentData[studentId - 1].status = statusSelect.value;
-            } else {
-                studentData[studentId - 1].status = "";
-            }
-        }
-
-        // Check attendance (Simulate saving data to Google Sheets)
-        function checkAttendance() {
-            const date = document.getElementById('datePicker').value;
-            if (!date) {
-                alert('กรุณาเลือกวันที่');
-                return;
-            }
-
-            // Send attendance data to Google Sheets using fetch API (Replace with your Google Sheets API endpoint)
-            fetch('https://your-google-sheets-api-endpoint', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer YOUR_GOOGLE_SHEETS_API_KEY`
-                },
-                body: JSON.stringify({ date, students: studentData })
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('บันทึกข้อมูลเรียบร้อย');
-            })
-            .catch(error => {
-                alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+        function clearAll(){
+            students.forEach((_,index)=>{
+                const select = document.querySelector(`#row-${index} select`);
+                select.value = '';
+                updateStatus(index,'');
             });
         }
 
-        // Reset attendance
-        function resetAttendance() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            const selects = document.querySelectorAll('select');
-
-            checkboxes.forEach(checkbox => checkbox.checked = false);
-            selects.forEach(select => select.selectedIndex = 0);
-
-            // Reset background color
-            document.querySelectorAll('.table-row').forEach(row => row.classList.remove('bg-green-500', 'bg-red-500', 'bg-yellow-500'));
-        }
-
-        // Initialize student table
-        renderTable();
+        // Initialize
+        renderStudents();
     </script>
 </body>
 </html>
