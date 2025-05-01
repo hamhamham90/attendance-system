@@ -52,12 +52,9 @@
                 <td class="px-6 py-2">${student.id}</td>
                 <td class="px-6 py-2">${student.name}</td>
                 <td class="px-6 py-2">
-                    <select onchange="updateStatus(this)" class="status-select border rounded px-2 py-1">
-                        <option value="">เลือกสถานะ</option>
-                        <option value="มาเรียน">มาเรียน</option>
-                        <option value="ไม่มาเรียน">ไม่มาเรียน</option>
-                        <option value="ลา">ลา</option>
-                    </select>
+                    <button onclick="setStatus(this, 'มาเรียน')" class="bg-green-200 px-3 py-1 rounded">มาเรียน</button>
+                    <button onclick="setStatus(this, 'ไม่มาเรียน')" class="bg-red-200 px-3 py-1 rounded">ไม่มาเรียน</button>
+                    <button onclick="setStatus(this, 'ลา')" class="bg-yellow-200 px-3 py-1 rounded">ลา</button>
                 </td>
                 <td class="px-6 py-2"><input type="text" class="border rounded px-2 py-1"></td>
             `;
@@ -65,13 +62,13 @@
             studentList.appendChild(row);
         });
 
-        function updateStatus(select) {
-            const row = select.parentNode.parentNode;
+        function setStatus(button, status) {
+            const row = button.parentNode.parentNode;
             row.classList.remove("bg-green-200", "bg-red-200", "bg-yellow-200");
 
-            if (select.value === "มาเรียน") row.classList.add("bg-green-200");
-            else if (select.value === "ไม่มาเรียน") row.classList.add("bg-red-200");
-            else if (select.value === "ลา") row.classList.add("bg-yellow-200");
+            if (status === "มาเรียน") row.classList.add("bg-green-200");
+            else if (status === "ไม่มาเรียน") row.classList.add("bg-red-200");
+            else if (status === "ลา") row.classList.add("bg-yellow-200");
         }
 
         function saveAttendance() {
