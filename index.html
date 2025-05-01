@@ -164,6 +164,28 @@
         const dailyDetailsList = document.getElementById("dailyDetailsList");
         const monthlySummaryData = document.getElementById("monthlySummaryData");
 
+        // ฟังก์ชันที่ทำให้วันที่และเวลาแสดงอัตโนมัติ
+        window.onload = function() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            let mm = today.getMonth() + 1; // เดือนเริ่มต้นจาก 0
+            let dd = today.getDate();
+            let hh = today.getHours();
+            let min = today.getMinutes();
+
+            if (mm < 10) mm = '0' + mm;
+            if (dd < 10) dd = '0' + dd;
+            if (hh < 10) hh = '0' + hh;
+            if (min < 10) min = '0' + min;
+
+            const currentDate = yyyy + '-' + mm + '-' + dd;
+            const currentTime = hh + ':' + min;
+
+            // ตั้งค่าให้วันที่และเวลาแสดงอัตโนมัติ
+            document.getElementById("checkDate").value = currentDate;
+            document.getElementById("checkTime").value = currentTime;
+        };
+
         students.forEach(student => {
             const row = document.createElement("tr");
             row.innerHTML = `
