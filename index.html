@@ -326,3 +326,38 @@
     </script>
 </body>
 </html>
+function saveAttendance() {
+    // รับข้อมูลจากฟอร์มในเว็บไซต์
+    const date = document.getElementById("checkDate").value;
+    const time = document.getElementById("checkTime").value;
+    const studentId = document.getElementById("studentId").value; // รหัสนักเรียน
+    const studentName = document.getElementById("studentName").value; // ชื่อนักเรียน
+    const note = document.getElementById("note").value || ""; // หมายเหตุ
+
+    // ข้อมูลที่จะส่งไปยัง Google Apps Script
+    const data = {
+        studentId: studentId,
+        studentName: studentName,
+        status: "มาโรงเรียน", // หรือ "ไม่มาโรงเรียน", "ลา"
+        note: note,
+        date: date,
+        checkInTime: time
+    };
+
+    // ส่งข้อมูลไปยัง Google Apps Script โดยใช้ fetch API
+    fetch('https://script.google.com/macros/s/AKfycbxdEhJTY4SphjJ1Uk6t04JwSpsAHPOdZDoirjQNQpW13R2V1gDQyW5LQPAIT6t9M8ecXQ/exec', {  
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(data)  // แปลงข้อมูลให้เป็น URL-encoded
+    })
+    .then(response => response.text()) // รับการตอบกลับจาก Google Apps Script
+    .then(data => {
+        alert('บันทึกข้อมูลเรียบร้อย');
+        updateSummaryPage(); // หากต้องการอัพเดทข้อมูลหรือสรุปบางอย่าง
+    })
+    .catch(error => {
+        console.error('Error:', error); // หากเกิดข้อผิดพลาด
+    });
+}
