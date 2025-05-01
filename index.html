@@ -3,106 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบเช็คชื่อออนไลน์ วิทยาลัยพณิชยการบึงพระพิษณุโลก</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>ระบบเช็คชื่อออนไลน์ - วิทยาลัยพณิชยการบึงพระพิษณุโลก</title>
-    <style>
-        body { font-family: 'Kanit', sans-serif; }
-        .status-btn { width: 90px; }
-    </style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gradient-to-br from-blue-200 to-purple-200 min-h-screen p-4">
-    <h1 class="text-2xl font-bold text-center text-purple-800 mb-4">ระบบเช็คชื่อออนไลน์</h1>
-    <h2 class="text-xl text-center text-purple-600 mb-2">สาขาการตลาด แผนกวิชาการตลาด</h2>
-    <div class="flex justify-center mb-4">
-        <input type="date" id="datePicker" class="p-2 rounded shadow">
-    </div>
+<body class="bg-gray-50 p-5">
+    <div class="container mx-auto bg-white shadow rounded-lg p-5">
+        <h1 class="text-2xl font-bold text-center mb-5">ระบบเช็คชื่อนักเรียนออนไลน์<br>สาขาการตลาด วิทยาลัยพณิชยการบึงพระพิษณุโลก</h1>
+        <h2 class="text-center mb-3">ครูที่ปรึกษา: ครูแฮม</h2>
 
-    <div class="overflow-auto">
-        <table class="w-full bg-white rounded shadow-lg">
-            <thead>
-                <tr class="bg-purple-300">
-                    <th class="py-2">รหัสนักเรียน</th>
-                    <th>ชื่อ - สกุล</th>
-                    <th>สถานะ</th>
+        <input type="date" id="checkDate" class="block mx-auto mb-5 border rounded px-3 py-1">
+
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-6 py-3">รูป</th>
+                    <th class="px-6 py-3">รหัสนักเรียน</th>
+                    <th class="px-6 py-3">ชื่อ-สกุล</th>
+                    <th class="px-6 py-3">สถานะ</th>
+                    <th class="px-6 py-3">บันทึกเพิ่มเติม</th>
                 </tr>
             </thead>
-            <tbody id="studentList">
-                <!-- รายชื่อนักเรียนจะโหลดด้วย JavaScript -->
-            </tbody>
+            <tbody id="studentList" class="divide-y divide-gray-200"></tbody>
         </table>
-    </div>
 
-    <div class="flex justify-center gap-4 mt-4">
-        <button onclick="checkAll('มา')" class="bg-green-400 hover:bg-green-500 text-white py-2 px-4 rounded">มาเรียนทั้งหมด</button>
-        <button onclick="checkAll('ลา')" class="bg-yellow-400 hover:bg-yellow-500 text-white py-2 px-4 rounded">ลาทั้งหมด</button>
-        <button onclick="checkAll('ขาด')" class="bg-red-400 hover:bg-red-500 text-white py-2 px-4 rounded">ขาดทั้งหมด</button>
-        <button onclick="clearAll()" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded">ยกเลิกทั้งหมด</button>
+        <button onclick="saveAttendance()" class="mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded block mx-auto">บันทึกข้อมูล</button>
     </div>
-
-    <footer class="fixed bottom-2 left-2 text-sm text-gray-600">
-        Developer: ครูแฮม © 2025-2026 All Rights Reserved
-    </footer>
 
     <script>
         const students = [
-            {id:'67202020001',name:'นางสาวจุฑารัตน์ จันทร'},
-            {id:'67202020002',name:'นายธันวา ง้วนดิน'},
-            {id:'67202020003',name:'นางสาวนันทิตา จงมีสุข'},
-            {id:'67202020004',name:'นางสาวบุณยวีร์ มีแสง'},
-            {id:'67202020006',name:'นางสาวรติมา เกษมพันธ์'},
-            {id:'67202020007',name:'นางสาวรุ่งนภา เที่ยงพร'},
-            {id:'67202020039',name:'นางสาวธนภรณ์ พุ่มรส'},
-            {id:'67202020040',name:'นายสุทิวัส ก้อนจันทร์'},
-            {id:'67202020041',name:'นางสาววิชญาดา จันต๊ะกูล'}
+            { id: "67202020001", name: "นางสาวจุฑารัตน์ จันทร" },
+            { id: "67202020002", name: "นายธันวา ง้วนดิน" },
+            { id: "67202020003", name: "นางสาวนันทิตา จงมีสุข" },
+            { id: "67202020004", name: "นางสาวบุณยวีร์ มีแสง" },
+            { id: "67202020006", name: "นางสาวรติมา เกษมพันธ์" },
+            { id: "67202020007", name: "นางสาวรุ่งนภา เที่ยงพร" },
+            { id: "67202020039", name: "นางสาวธนภรณ์ พุ่มรส" },
+            { id: "67202020040", name: "นายสุทิวัส ก้อนจันทร์" },
+            { id: "67202020041", name: "นางสาววิชญาดา จันต๊ะกูล" }
         ];
 
-        function renderStudents(){
-            let html = '';
-            students.forEach((stu,index)=>{
-                html += `<tr class="text-center" id="row-${index}">
-                    <td class="py-2">${stu.id}</td>
-                    <td>${stu.name}</td>
-                    <td>
-                        <select onchange="updateStatus(${index},this.value)" class="status-btn rounded border p-1">
-                            <option value="">--เลือก--</option>
-                            <option value="มา">มา</option>
-                            <option value="ลา">ลา</option>
-                            <option value="ขาด">ขาด</option>
-                        </select>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById('studentList').innerHTML = html;
+        const studentList = document.getElementById("studentList");
+
+        students.forEach(student => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td class="px-6 py-2"><input type="file"></td>
+                <td class="px-6 py-2">${student.id}</td>
+                <td class="px-6 py-2">${student.name}</td>
+                <td class="px-6 py-2">
+                    <select onchange="updateStatus(this)" class="status-select border rounded px-2 py-1">
+                        <option value="">เลือกสถานะ</option>
+                        <option value="มาเรียน">มาเรียน</option>
+                        <option value="ไม่มาเรียน">ไม่มาเรียน</option>
+                        <option value="ลา">ลา</option>
+                    </select>
+                </td>
+                <td class="px-6 py-2"><input type="text" class="border rounded px-2 py-1"></td>
+            `;
+
+            studentList.appendChild(row);
+        });
+
+        function updateStatus(select) {
+            const row = select.parentNode.parentNode;
+            row.classList.remove("bg-green-200", "bg-red-200", "bg-yellow-200");
+
+            if (select.value === "มาเรียน") row.classList.add("bg-green-200");
+            else if (select.value === "ไม่มาเรียน") row.classList.add("bg-red-200");
+            else if (select.value === "ลา") row.classList.add("bg-yellow-200");
         }
 
-        function updateStatus(index,status){
-            const row = document.getElementById('row-'+index);
-            row.classList.remove('bg-green-200','bg-yellow-200','bg-red-200');
-            if(status=='มา') row.classList.add('bg-green-200');
-            else if(status=='ลา') row.classList.add('bg-yellow-200');
-            else if(status=='ขาด') row.classList.add('bg-red-200');
+        function saveAttendance() {
+            alert("บันทึกข้อมูลเรียบร้อย");
+            // Logic for saving and percentage calculation can be added here.
         }
-
-        function checkAll(status){
-            students.forEach((_,index)=>{
-                const select = document.querySelector(`#row-${index} select`);
-                select.value = status;
-                updateStatus(index,status);
-            });
-        }
-
-        function clearAll(){
-            students.forEach((_,index)=>{
-                const select = document.querySelector(`#row-${index} select`);
-                select.value = '';
-                updateStatus(index,'');
-            });
-        }
-
-        // Initialize
-        renderStudents();
     </script>
 </body>
 </html>
