@@ -13,41 +13,62 @@
         <h2 class="text-center mb-3">ครูที่ปรึกษา: ครูแฮม</h2>
 
         <div class="flex justify-center gap-2 mb-5">
-            <button class="bg-blue-500 text-white px-3 py-1 rounded">เช็คชื่อ</button>
-            <button class="bg-blue-500 text-white px-3 py-1 rounded">รายละเอียดรายวัน</button>
-            <button class="bg-blue-500 text-white px-3 py-1 rounded">สรุปการเข้าเรียน</button>
-            <button class="bg-blue-500 text-white px-3 py-1 rounded" onclick="showMonthlySummary()">สรุปรายเดือน</button>
-            <button class="bg-blue-500 text-white px-3 py-1 rounded">เปรียบเทียบภาพรวม</button>
+            <button onclick="showPage('checkInPage')" class="bg-blue-500 text-white px-3 py-1 rounded">เช็คชื่อ</button>
+            <button onclick="showPage('dailyDetailPage')" class="bg-blue-500 text-white px-3 py-1 rounded">รายละเอียดรายวัน</button>
+            <button onclick="showPage('summaryPage')" class="bg-blue-500 text-white px-3 py-1 rounded">สรุปการเข้าเรียน</button>
+            <button onclick="showPage('monthlySummaryPage')" class="bg-blue-500 text-white px-3 py-1 rounded">สรุปรายเดือน</button>
+            <button onclick="showPage('comparePage')" class="bg-blue-500 text-white px-3 py-1 rounded">เปรียบเทียบภาพรวม</button>
         </div>
 
-        <input type="date" id="checkDate" class="block mx-auto mb-5 border rounded px-3 py-1">
+        <!-- หน้าหลัก: เช็คชื่อ -->
+        <div id="checkInPage">
+            <input type="date" id="checkDate" class="block mx-auto mb-5 border rounded px-3 py-1">
 
-        <div class="flex justify-center gap-2 mb-3">
-            <button onclick="checkAll('มาโรงเรียน')" class="bg-green-500 text-white px-3 py-1 rounded">มาโรงเรียนทั้งหมด</button>
-            <button onclick="checkAll('ไม่มาโรงเรียน')" class="bg-red-500 text-white px-3 py-1 rounded">ไม่มาโรงเรียนทั้งหมด</button>
-            <button onclick="checkAll('ลา')" class="bg-yellow-500 text-white px-3 py-1 rounded">ลาทั้งหมด</button>
-            <button onclick="clearAll()" class="bg-gray-500 text-white px-3 py-1 rounded">ยกเลิกทั้งหมด</button>
+            <div class="flex justify-center gap-2 mb-3">
+                <button onclick="checkAll('มาโรงเรียน')" class="bg-green-500 text-white px-3 py-1 rounded">มาโรงเรียนทั้งหมด</button>
+                <button onclick="checkAll('ไม่มาโรงเรียน')" class="bg-red-500 text-white px-3 py-1 rounded">ไม่มาโรงเรียนทั้งหมด</button>
+                <button onclick="checkAll('ลา')" class="bg-yellow-500 text-white px-3 py-1 rounded">ลาทั้งหมด</button>
+                <button onclick="clearAll()" class="bg-gray-500 text-white px-3 py-1 rounded">ยกเลิกทั้งหมด</button>
+            </div>
+
+            <table class="min-w-full divide-y divide-gray-200 mb-5">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-6 py-3">รูป 📷</th>
+                        <th class="px-6 py-3">รหัสนักเรียน</th>
+                        <th class="px-6 py-3">ชื่อ-สกุล</th>
+                        <th class="px-6 py-3">สถานะ</th>
+                        <th class="px-6 py-3">บันทึกเพิ่มเติม</th>
+                    </tr>
+                </thead>
+                <tbody id="studentList" class="divide-y divide-gray-200"></tbody>
+            </table>
+
+            <button onclick="saveAttendance()" class="mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded block mx-auto">บันทึกข้อมูล</button>
         </div>
 
-        <table class="min-w-full divide-y divide-gray-200 mb-5">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="px-6 py-3">รูป 📷</th>
-                    <th class="px-6 py-3">รหัสนักเรียน</th>
-                    <th class="px-6 py-3">ชื่อ-สกุล</th>
-                    <th class="px-6 py-3">สถานะ</th>
-                    <th class="px-6 py-3">บันทึกเพิ่มเติม</th>
-                </tr>
-            </thead>
-            <tbody id="studentList" class="divide-y divide-gray-200"></tbody>
-        </table>
+        <!-- หน้ารายละเอียดรายวัน -->
+        <div id="dailyDetailPage" class="hidden">
+            <h2 class="text-xl font-bold text-center mb-4">รายละเอียดรายวัน</h2>
+            <p class="text-center">(เนื้อหารายละเอียดรายวันใส่ตรงนี้)</p>
+        </div>
 
-        <button onclick="saveAttendance()" class="mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded block mx-auto">บันทึกข้อมูล</button>
+        <!-- หน้าสรุปการเข้าเรียน -->
+        <div id="summaryPage" class="hidden">
+            <h2 class="text-xl font-bold text-center mb-4">สรุปการเข้าเรียน</h2>
+            <p class="text-center">(เนื้อหาสรุปการเข้าเรียนใส่ตรงนี้)</p>
+        </div>
 
-        <!-- ส่วนสรุปรายเดือน -->
-        <div id="monthlySummary" class="hidden mt-10">
+        <!-- หน้าสรุปรายเดือน -->
+        <div id="monthlySummaryPage" class="hidden">
             <h2 class="text-xl font-bold text-center mb-4">สรุปการเข้าเรียนรายเดือน</h2>
             <canvas id="summaryChart" width="400" height="200"></canvas>
+        </div>
+
+        <!-- หน้าเปรียบเทียบภาพรวม -->
+        <div id="comparePage" class="hidden">
+            <h2 class="text-xl font-bold text-center mb-4">เปรียบเทียบภาพรวมของแต่ละห้อง</h2>
+            <p class="text-center">(เนื้อหาเปรียบเทียบภาพรวมใส่ตรงนี้)</p>
         </div>
     </div>
 
@@ -100,28 +121,29 @@
             alert("บันทึกข้อมูลเรียบร้อย");
         }
 
-        function showMonthlySummary() {
-            document.getElementById('monthlySummary').classList.remove('hidden');
-            const ctx = document.getElementById('summaryChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['มาโรงเรียน', 'ไม่มาโรงเรียน', 'ลา'],
-                    datasets: [{
-                        label: 'จำนวนวัน',
-                        data: [20, 3, 2], // ข้อมูลตัวอย่าง สามารถแก้ไขเป็นค่าจริงได้
-                        backgroundColor: ['#4ade80', '#f87171', '#facc15']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+        function showPage(pageId) {
+            const pages = ['checkInPage', 'dailyDetailPage', 'summaryPage', 'monthlySummaryPage', 'comparePage'];
+            pages.forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+
+            if (pageId === 'monthlySummaryPage') {
+                const ctx = document.getElementById('summaryChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['มาโรงเรียน', 'ไม่มาโรงเรียน', 'ลา'],
+                        datasets: [{
+                            label: 'จำนวนวัน',
+                            data: [20, 3, 2], // ตัวอย่างข้อมูล สามารถแก้เป็นจริงได้
+                            backgroundColor: ['#4ade80', '#f87171', '#facc15']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: { y: { beginAtZero: true } }
                     }
-                }
-            });
+                });
+            }
         }
     </script>
 </body>
