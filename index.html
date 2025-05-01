@@ -64,13 +64,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="bg-green-100">
-                        <td class="px-6 py-2">67202020001</td>
-                        <td class="px-6 py-2">นางสาวจุฑารัตน์ จันทร</td>
-                        <td class="px-6 py-2">มาโรงเรียน</td>
-                        <td class="px-6 py-2">08:00</td>
-                        <td class="px-6 py-2">-</td>
-                    </tr>
+                    <!-- จะถูกอัพเดทโดย JavaScript -->
                 </tbody>
             </table>
         </div>
@@ -90,16 +84,8 @@
                         <th class="px-6 py-3">เปอร์เซ็นต์</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td class="px-6 py-2">67202020001</td>
-                        <td class="px-6 py-2">นางสาวจุฑารัตน์ จันทร</td>
-                        <td class="px-6 py-2">20</td>
-                        <td class="px-6 py-2">1</td>
-                        <td class="px-6 py-2">2</td>
-                        <td class="px-6 py-2">95</td>
-                        <td class="px-6 py-2">95%</td>
-                    </tr>
+                <tbody id="summaryData">
+                    <!-- จะถูกอัพเดทโดย JavaScript -->
                 </tbody>
             </table>
         </div>
@@ -147,7 +133,10 @@
             { id: "67202020041", name: "นางสาววิชญาดา จันต๊ะกูล" }
         ];
 
+        let attendanceData = [];
+
         const studentList = document.getElementById("studentList");
+        const summaryData = document.getElementById("summaryData");
 
         students.forEach(student => {
             const row = document.createElement("tr");
@@ -169,24 +158,43 @@
             const row = button.parentNode.parentNode;
             row.className = '';
             row.classList.add(status === 'มาโรงเรียน' ? 'bg-green-200' : status === 'ไม่มาโรงเรียน' ? 'bg-red-200' : 'bg-yellow-200');
-        }
 
-        function checkAll(status) {
-            document.querySelectorAll('tbody tr').forEach(row => setStatus(row.querySelector('button'), status));
-        }
-
-        function clearAll() {
-            document.querySelectorAll('tbody tr').forEach(row => row.className = '');
+            // Save status to attendanceData array
+            const studentId = row.children[1].textContent;
+            const studentName = row.children[2].textContent;
+            const studentStatus = status;
+            const studentEntry = { studentId, studentName, studentStatus };
+            attendanceData.push(studentEntry);
         }
 
         function saveAttendance() {
             alert("บันทึกข้อมูลเรียบร้อย");
+            updateSummaryPage();
+        }
+
+        function updateSummaryPage() {
+            summaryData.innerHTML = '';  // Clear the previous summary data
+
+            attendanceData.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-2">${entry.studentId}</td>
+                    <td class="px-6 py-2">${entry.studentName}</td>
+                    <td class="px-6 py-2">${entry.studentStatus === 'มาโรงเรียน' ? 1 : entry.studentStatus === 'ลา' ? 0.5 : 0}</td>
+                    <td class="px-6 py-2">-</td>
+                    <td class="px-6 py-2">-</td>
+                    <td class="px-6 py-2">${entry.studentStatus === 'มาโรงเรียน' ? 1 : entry.studentStatus === 'ลา' ? 0.5 : 0}</td>
+                    <td class="px-6 py-2">${(entry.studentStatus === 'มาโรงเรียน' ? 1 : entry.studentStatus === 'ลา' ? 0.5 : 0) * 100}%</td>
+                `;
+                summaryData.appendChild(row);
+            });
         }
 
         function showPage(pageId) {
             const pages = ['checkInPage', 'dailyDetailPage', 'summaryPage', 'monthlySummaryPage', 'comparePage'];
             pages.forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(pageId).classList.remove('hidden');
+
             if (pageId === 'monthlySummaryPage') {
                 const ctx = document.getElementById('summaryChart').getContext('2d');
                 new Chart(ctx, {
